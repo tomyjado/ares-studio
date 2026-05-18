@@ -1,46 +1,64 @@
+// components/Background.tsx
+
 async function getGames() {
-  const groups = [35767078, 921325898, 434797992]
+
+  const groups = [
+    35767078,
+    921325898,
+434797992,
+    230250709,
+    587378400,
+    927579712,
+    14943317,
+    35814365,
+    232873193
+  ]
 
   let games: any[] = []
 
   for (const groupId of groups) {
 
-    const gamesRes = await fetch(
-      `https://games.roblox.com/v2/groups/${groupId}/games?accessFilter=Public&limit=50&sortOrder=Asc`,
-      {
-        cache: "no-store"
-      }
-    )
+    try {
 
-    const gamesData = await gamesRes.json()
-
-    const universeIds = gamesData.data.map(
-      (game: any) => game.id
-    )
-
-    if (universeIds.length > 0) {
-
-      // THUMBNAILS
-      const thumbRes = await fetch(
-        `https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeIds.join(",")}&size=768x432&format=Png`
+      const gamesRes = await fetch(
+        `https://games.roblox.com/v2/groups/${groupId}/games?accessFilter=Public&limit=50&sortOrder=Asc`,
+        {
+          cache: "no-store"
+        }
       )
 
-      const thumbData = await thumbRes.json()
+      const gamesData = await gamesRes.json()
 
-      // GAME STATS
-      const statsRes = await fetch(
-        `https://games.roblox.com/v1/games?universeIds=${universeIds.join(",")}`
+      const universeIds = gamesData.data.map(
+        (game: any) => game.id
       )
 
-      const statsData = await statsRes.json()
+      if (universeIds.length > 0) {
 
-      for (const thumb of thumbData.data) {
-
-        const gameInfo = statsData.data.find(
-          (g: any) => g.id === thumb.universeId
+        const thumbRes = await fetch(
+          `https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeIds.join(",")}&size=768x432&format=Png`
         )
 
-        if (thumb.thumbnails?.[0]?.imageUrl) {
+        const thumbData = await thumbRes.json()
+
+        const statsRes = await fetch(
+          `https://games.roblox.com/v1/games?universeIds=${universeIds.join(",")}`
+        )
+
+        const statsData = await statsRes.json()
+
+        for (const thumb of thumbData.data) {
+
+          const gameInfo = statsData.data.find(
+            (g: any) => g.id === thumb.universeId
+          )
+
+          // HIDE EMPTY GAMES
+          if (
+            !thumb.thumbnails?.[0]?.imageUrl ||
+            !gameInfo ||
+            gameInfo.playing <= 0
+          ) continue
 
           games.push({
             image: thumb.thumbnails[0].imageUrl,
@@ -54,21 +72,28 @@ async function getGames() {
 
       }
 
+    } catch (err) {
+      console.log(err)
     }
 
   }
 
   return games
+
 }
 
 function format(number: number) {
 
+  if (number >= 1000000000) {
+    return (number / 1000000000).toFixed(1) + "B+"
+  }
+
   if (number >= 1000000) {
-    return (number / 1000000).toFixed(1) + "M"
+    return (number / 1000000).toFixed(1) + "M+"
   }
 
   if (number >= 1000) {
-    return (number / 1000).toFixed(1) + "K"
+    return (number / 1000).toFixed(1) + "K+"
   }
 
   return number.toString()
@@ -88,10 +113,8 @@ export default async function Background() {
   return (
     <div className="absolute inset-0 overflow-hidden">
 
-      {/* DARK OVERLAY */}
-      <div className="absolute inset-0 bg-black/75 z-10" />
+      <div className="absolute inset-0 bg-black/45 z-10" />
 
-      {/* MOVING ROWS */}
       <div className="absolute inset-0 flex flex-col gap-8 pt-8">
 
         {rows.map((row, rowIndex) => (
@@ -129,10 +152,11 @@ export default async function Background() {
                     absolute inset-0
                     w-full h-full
                     object-cover
+                    opacity-60
                   "
                 />
 
-                <div className="absolute inset-0 bg-black/45" />
+                <div className="absolute inset-0 bg-black/40" />
 
                 <div className="absolute bottom-0 left-0 right-0 p-5 z-20">
 
