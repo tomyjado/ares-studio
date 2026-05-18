@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 10, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/abraa/Downloads/ares-studio-template/app/page.tsx"],"sourcesContent":["// app/page.tsx\n\nimport Hero from \"@/components/Hero\"\nimport Background from \"@/components/Background\"\nimport GamesSection from \"@/components/GamesSection\"\n\nexport default function Home() {\n  return (\n    <main className=\"relative min-h-screen overflow-hidden bg-black text-white\">\n\n      <Background />\n\n      <div className=\"relative z-20\">\n        <Hero />\n        <GamesSection />\n      </div>\n\n    </main>\n  )\n}"],"names":["Home","className","Background","Hero","GamesSection"],"mappings":"AAAA,eAAe;;;;;;;;;;;;;;;;;;;;;;;;;AAMA,SAASA;IACtB,qBACE,8OAAC;QAAKC,WAAU;;0BAEd,8OAACC;;;;;0BAED,8OAAC;gBAAID,WAAU;;kCACb,8OAACE;;;;;kCACD,8OAACC;;;;;;;;;;;;;;;;;AAKT"}}]
+}
